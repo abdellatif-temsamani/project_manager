@@ -12,15 +12,16 @@ void validate_args(int argc, char *argv[]) {
 }
 
 char *get_base_path(char *path) {
-
   char *base_path = (char *)malloc(strlen(path) + 1);
+  strcpy(base_path, path);
+
   if (base_path == NULL) {
     fprintf(stderr, "Memory allocation error\n");
     exit(EXIT_FAILURE);
   }
 
   char *token;
-  char *res = strtok_r(path, "/", &token);
+  char *res = strtok_r(base_path, "/", &token);
 
   while (res != NULL) {
     base_path = res;
