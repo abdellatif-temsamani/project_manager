@@ -1,20 +1,15 @@
-#include "main.h"
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include "includes/main.h"
+#include "includes/utils.h"
+
+#include <signal.h>
 
 int main(int argc, char *argv[]) {
   validate_args(argc, argv);
 
-  exit(EXIT_SUCCESS);
-}
+  char *base_path = get_base_path(argv[1]);
 
-void validate_args(int argc, char *argv[]) {
+  /* while (1) {
+  } */
 
-  if (argc < 2) {
-    fprintf(stderr, "USAGE: project_manager: <PATH> \n");
-    exit(EXIT_FAILURE);
-  }
+  return 0;
 }
