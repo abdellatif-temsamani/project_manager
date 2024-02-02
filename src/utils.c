@@ -2,7 +2,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 void validate_args(int argc, char *argv[]) {
   if (argc < 2) {
@@ -11,22 +10,9 @@ void validate_args(int argc, char *argv[]) {
   }
 }
 
-char *get_base_path(char *path) {
-  char *base_path = (char *)malloc(strlen(path) + 1);
-  strcpy(base_path, path);
-
-  if (base_path == NULL) {
-    fprintf(stderr, "Memory allocation error\n");
-    exit(EXIT_FAILURE);
+void check_error(int handler, char *err_message, int exit_code) {
+  if (handler == -1) {
+    fprintf(stderr, "%s\n", err_message);
+    exit(exit_code);
   }
-
-  char *token;
-  char *res = strtok_r(base_path, "/", &token);
-
-  while (res != NULL) {
-    base_path = res;
-    res = strtok_r(NULL, "/", &token);
-  }
-
-  return base_path;
 }

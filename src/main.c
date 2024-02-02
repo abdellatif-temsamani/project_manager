@@ -4,7 +4,6 @@
 #include <libnotify/notification.h>
 #include <libnotify/notify.h>
 #include <signal.h>
-#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,10 +17,7 @@ void signal_handler(int signal) {
   fprintf(stdout, "Closing the daemon, bye\n");
   close_status = inotify_rm_watch(inotify_queue, inotify_status);
 
-  if (close_status == -1) {
-    fprintf(stderr, "Error: error removing watch queue\n");
-    exit(EXIT_FAILURE);
-  }
+  check_error(close_status, "Error: error removing watch queue", EXIT_FAILURE);
 
   close(inotify_queue);
   exit(EXIT_SUCCESS);
@@ -30,31 +26,18 @@ void signal_handler(int signal) {
 int main(int argc, char *argv[]) {
   validate_args(argc, argv);
 
-  char *base_path = get_base_path(argv[1]);
-  if (base_path == NULL) {
-    fprintf(stderr, "Error: directory not found\n");
-    exit(EXIT_FILEPATHERR);
-  }
-
   NotifyNotification *libnotify_handle;
-  bool libnotify_status = notify_init("Project Manager");
-  if (!libnotify_status) {
-    fprintf(stderr, "Error: creating libinotify\n");
-    exit(EXIT_FAILURE);
-  }
+  int libnotify_status = -1;
+  libnotify_status = notify_init("Project Manager");
+  check_error(libnotify_status, "Error: creating libinotify", EXIT_FAILURE);
 
   inotify_queue = inotify_init();
-  if (inotify_queue == -1) {
-    fprintf(stderr, "Error: creating inotify instance\n");
-    exit(EXIT_FAILURE);
-  }
+  check_error(inotify_queue, "Error: creating inotify instance", EXIT_FAILURE);
 
   uint32_t mask = IN_CREATE | IN_DELETE | IN_ONLYDIR;
   inotify_status = inotify_add_watch(inotify_queue, argv[1], mask);
-  if (inotify_status == -1) {
-    fprintf(stderr, "Error: could not watch over %s\n", argv[1]);
-    exit(EXIT_FILEPATHERR);
-  }
+  check_error(inotify_status, "Error: watching over directory",
+              EXIT_FILEPATHERR);
 
   char buffer[4096];
   const struct inotify_event *watch_event;
@@ -67,12 +50,10 @@ int main(int argc, char *argv[]) {
   signal(SIGINT, signal_handler);
   signal(SIGTERM, signal_handler);
 
-  while (true) {
+  while (1) {
     read_length = read(inotify_queue, buffer, sizeof(buffer));
-    if (read_length == -1) {
-      fprintf(stderr, "Error: Error reading from inotify instance\n");
-      exit(EXIT_FAILURE);
-    }
+    check_error(read_length, "Error: Error reading from inotify instance",
+                EXIT_FAILURE);
 
     for (char *ptr = buffer; ptr < buffer + read_length;
          ptr += sizeof(struct inotify_event) + watch_event->len) {
@@ -97,8 +78,8 @@ int main(int argc, char *argv[]) {
         continue;
       }
 
-      libnotify_handle = notify_notification_new(
-          NULL, libnotify_message, "dialog-information");
+      libnotify_handle = notify_notification_new(NULL, libnotify_message,
+                                                 "dialog-information");
       if (libnotify_handle == NULL) {
         fprintf(stderr, "Error: Error sending notification\n");
         exit(EXIT_FAILURE);
