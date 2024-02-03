@@ -1,8 +1,5 @@
 #include "includes/utils.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-
 void validate_args(int argc, char *argv[]) {
   if (argc < 2) {
     fprintf(stderr, "USAGE: project_manager: <PATH> \n");
