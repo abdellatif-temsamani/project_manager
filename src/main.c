@@ -1,4 +1,5 @@
 #include "includes/main.h"
+#include "includes/notify.h"
 #include "includes/utils.h"
 
 #include <libnotify/notification.h>
@@ -27,9 +28,7 @@ int main(int argc, char *argv[]) {
   validate_args(argc, argv);
 
   NotifyNotification *libnotify_handle;
-  int libnotify_status = -1;
-  libnotify_status = notify_init("Project Manager");
-  check_error(libnotify_status, "Error: creating libinotify", EXIT_FAILURE);
+  init_libnotify();
 
   inotify_queue = inotify_init();
   check_error(inotify_queue, "Error: creating inotify instance", EXIT_FAILURE);
@@ -66,11 +65,11 @@ int main(int argc, char *argv[]) {
           // notification_message = "project created";
 
           libnotify_message = (char *)malloc(32 * sizeof(char));
-          sprintf(libnotify_message, "project %s created", watch_event->name);
+          sprintf(libnotify_message, "%s created", watch_event->name);
         } else if (watch_event->mask & IN_DELETE) {
           // notification_message = "project deleted";
           libnotify_message = (char *)malloc(32 * sizeof(char));
-          sprintf(libnotify_message, "project %s deleted", watch_event->name);
+          sprintf(libnotify_message, "%s deleted", watch_event->name);
         }
       }
 
@@ -78,15 +77,7 @@ int main(int argc, char *argv[]) {
         continue;
       }
 
-      libnotify_handle = notify_notification_new(NULL, libnotify_message,
-                                                 "dialog-information");
-      if (libnotify_handle == NULL) {
-        fprintf(stderr, "Error: Error sending notification\n");
-        exit(EXIT_FAILURE);
-      }
-
-      notify_notification_show(libnotify_handle, NULL);
-      free(libnotify_message);
+      notify(libnotify_handle, libnotify_message);
     }
   }
 }
