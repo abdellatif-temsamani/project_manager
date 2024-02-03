@@ -1,7 +1,9 @@
 project(project_manager)
 cmake_minimum_required(VERSION 3.0)
 
-add_executable(project_manager src/main.c src/utils.c src/notify.c)
+set(SOURCE_FILES src/main.c src/utils.c src/inotify.c src/notify.c)
+
+add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBNOTIFY REQUIRED libnotify)
