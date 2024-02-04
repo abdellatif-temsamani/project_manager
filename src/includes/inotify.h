@@ -1,6 +1,7 @@
 #ifndef INOTIFY_H
 #define INOTIFY_H
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <sys/inotify.h>
 

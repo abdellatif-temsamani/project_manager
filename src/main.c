@@ -37,11 +37,14 @@ int main(int argc, char *argv[]) {
       watch_event = (const struct inotify_event *)ptr;
 
       if (watch_event->mask & IN_ISDIR) {
+        char *absolute_path = (char *)malloc(sizeof(argv[1]) + 32);
+        sprintf(absolute_path, "%s/%s", argv[1], watch_event->name);
+
         if (watch_event->mask & IN_CREATE) {
           libnotify_message = (char *)malloc(32 * sizeof(char));
           sprintf(libnotify_message, "%s created", watch_event->name);
+
         } else if (watch_event->mask & IN_DELETE) {
-          // notification_message = "project deleted";
           libnotify_message = (char *)malloc(32 * sizeof(char));
           sprintf(libnotify_message, "%s deleted", watch_event->name);
         }
@@ -52,6 +55,7 @@ int main(int argc, char *argv[]) {
       }
 
       notify(libnotify_handle, libnotify_message);
+      free(libnotify_message);
     }
   }
 }

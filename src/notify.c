@@ -17,5 +17,4 @@ void notify(NotifyNotification *handler, char *notification_message) {
   }
 
   notify_notification_show(handler, NULL);
-  free(notification_message);
 }

@@ -2,8 +2,13 @@
 
 void validate_args(int argc, char *argv[]) {
   if (argc < 2) {
-    fprintf(stderr, "USAGE: project_manager: <PATH> \n");
+    fprintf(stderr, "USAGE: project_manager: <WATCH_PATH>\n");
     exit(EXIT_FAILURE);
+  }
+
+  if (argv[1] == "create") {
+    fprintf(stdout, "DB created\n");
+    exit(EXIT_SUCCESS);
   }
 }
 

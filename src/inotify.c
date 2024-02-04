@@ -1,6 +1,7 @@
 #include "includes/inotify.h"
 #include "includes/main.h"
 #include "includes/utils.h"
+#include <stdio.h>
 
 int init_inotify() {
   int queue = inotify_init();
